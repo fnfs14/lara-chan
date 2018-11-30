@@ -1,0 +1,51 @@
+/* override */
+.dataTables_paginate a {
+	background: #1abb9c !important;
+    border: 1px solid #07ad8d !important;
+	color: white !important;
+}
+.dataTables_paginate a:active:focus, .dataTables_paginate a:active:hover {
+	background-color: #07ad8d !important;
+    border-color: #07ad8d !important;
+}
+.dataTables_paginate a:active, .dataTables_paginate a:focus, .dataTables_paginate a:hover {
+	background: #07ad8d !important;
+}
+
+/* custom */
+.txt-left {
+	text-align: left !important;
+}
+.txt-right {
+	text-align: right !important;
+}
+.txt-center {
+	text-align: center !important;
+}
+.tarea-h {
+	resize: horizontal !important;
+}
+.tarea-v {
+	resize: vertical !important;
+}
+.valign-mid {
+	vertical-align: middle !important;
+}
+.mrg-btm-0 {
+	margin-bottom: 0px !important;
+}
+.bg-secondary {
+	background-color: #f3f3f3 !important;
+	border-color: #f3f3f3 !important;
+}
+.underline {
+	text-decoration: underline !important;
+}
+.pointer {
+	cursor: pointer !important;
+}
+.wrap {
+	/* overflow-wrap: break-word !important; */
+	word-wrap: break-word !important;
+	/* white-space: nowrap !important; */
+}
