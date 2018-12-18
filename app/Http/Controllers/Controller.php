@@ -10,6 +10,7 @@ use Uuid;
 use DB;
 use Auth;
 use App\_user;
+use App\_task;
 
 class Controller extends BaseController
 {
@@ -40,5 +41,38 @@ class Controller extends BaseController
 		}
 		session()->flash('text', $text);
 		session()->flash('type', $type);
+	}
+	
+	protected function _flashUpdate($query,$r){
+		if(!$query){ // if failed
+			$text = "Failed to update $r";
+			$type = 'warning';
+		}else{ // if success
+			$text = "$r has been updated.";
+			$type = 'success';
+		}
+		session()->flash('text', $text);
+		session()->flash('type', $type);
+	}
+	
+	protected function _breadcrumb($id){
+		$i = 0;
+		$limit = 0;
+		$result = "";
+		$arrow = "";
+		$data = _task::findOrFail($id);
+		while($limit==0){
+			if($i!=0){
+				$arrow = " <b>></b> ";
+			}
+			$result = $data->title.$arrow.$result;
+			if($data->parent=='0'){
+				$limit++;
+			}else{				
+				$data = _task::findOrFail($data->parent);
+			}
+			$i++;
+		}
+		return $result;
 	}
 }

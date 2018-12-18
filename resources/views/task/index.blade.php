@@ -11,12 +11,6 @@
     <link href="{{ chan::vendor('pnotify/dist/pnotify.css') }}" rel="stylesheet">
     <link href="{{ chan::vendor('pnotify/dist/pnotify.buttons.css') }}" rel="stylesheet">
     <link href="{{ chan::vendor('pnotify/dist/pnotify.nonblock.css') }}" rel="stylesheet">
-    <!-- Datatables -->
-    <link href="{{ chan::vendor('datatables.net-bs/css/dataTables.bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ chan::vendor('datatables.net-buttons-bs/css/buttons.bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ chan::vendor('datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ chan::vendor('datatables.net-responsive-bs/css/responsive.bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ chan::vendor('datatables.net-scroller-bs/css/scroller.bootstrap.min.css') }}" rel="stylesheet">
 @endpush
 
 @push('scripts')
@@ -30,132 +24,127 @@
     <script src="{{ chan::vendor('pnotify/dist/pnotify.js') }}"></script>
     <script src="{{ chan::vendor('pnotify/dist/pnotify.buttons.js') }}"></script>
     <script src="{{ chan::vendor('pnotify/dist/pnotify.nonblock.js') }}"></script>
-    <!-- Datatables -->
-    <script src="{{ chan::vendor('datatables.net/js/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ chan::vendor('datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
-    <script src="{{ chan::vendor('datatables.net-buttons/js/dataTables.buttons.min.js') }}"></script>
-    <script src="{{ chan::vendor('datatables.net-buttons-bs/js/buttons.bootstrap.min.js') }}"></script>
-    <script src="{{ chan::vendor('datatables.net-buttons/js/buttons.flash.min.js') }}"></script>
-    <script src="{{ chan::vendor('datatables.net-buttons/js/buttons.html5.min.js') }}"></script>
-    <script src="{{ chan::vendor('datatables.net-buttons/js/buttons.print.min.js') }}"></script>
-    <script src="{{ chan::vendor('datatables.net-fixedheader/js/dataTables.fixedHeader.min.js') }}"></script>
-    <script src="{{ chan::vendor('datatables.net-keytable/js/dataTables.keyTable.min.js') }}"></script>
-    <script src="{{ chan::vendor('datatables.net-responsive/js/dataTables.responsive.min.js') }}"></script>
-    <script src="{{ chan::vendor('datatables.net-responsive-bs/js/responsive.bootstrap.js') }}"></script>
-    <script src="{{ chan::vendor('datatables.net-scroller/js/dataTables.scroller.min.js') }}"></script>
+	<!-- LiveQuery -->
     <script src="{{ asset('livequery/jquery.livequery.js') }}"></script>
+    <!-- jQuery Knob -->
+    <script src="{{ chan::vendor('jquery-knob/dist/jquery.knob.min.js') }}"></script>
 	<script>
-		$(".progress .progress-bar")[0] && $(".progress .progress-bar").progressbar();
+		var _offset = 0;
+		var _parent = "{{ $parent }}";
+		var _url = "{{ url('task') }}";
+		var _urlData = "{{ url('data/task') }}";
+		var _countAllData = {{ chan::countData('task.task','parent',$parent) }};
 		@if(session()->has('text') and session()->has('type'))
-		new PNotify({
-			title: 'Task',
-			text: "{{session('text')}}",
-			type: "{{session('type')}}",
-			styling: 'bootstrap3'
-		});
+			_pNotify('Task',"{{session('text')}}","{{session('type')}}");
 		@endif
-		function detail(id){
-			alert(id);
-		}
-		var s = "<?= ($status!="0")?'?s='.$status:''; ?>";
-		var t = "<?= ($parent!="0")?'?t='.$parent->id:''; ?>";
-		$('#datatable-responsive').DataTable( {
-			"processing": true,
-			"serverSide": true,
-			"ajax": "{{ url('data/task') }}"+s+t,
-			"aLengthMenu": [[5, 10, 15, 20], [5, 10, 15, 20]],
-			"iDisplayLength": 10
-		} );
-		$('.progress .progress-bar').livequery(function() {
-			$(this).progressbar();
-		});
-		function canceled(id,title){
-			$("#canceled").modal('show');
-			$(".modal-title b").html(title);
-		}
 	</script>
+	<script src="{{ asset('js/admin/task/index.js') }}"></script>
 @endpush
 
 @section('content')
 <div class="col-md-12 col-sm-12 col-xs-12">
 	<div class="x_panel">
 	  <div class="x_title">
-		<h2>
+		<h2 class="ws-normal">
 			Task
 			<small>
-				{!! ($parent!="0") ? 'Sub task of <b>'.$parent->title.'</b>' : $breadcrumb ; !!}
+				{!! $breadcrumb !!}
 			</small>
 		</h2>
 		<ul class="nav navbar-right panel_toolbox">
-		  @if($parent!='0')
+		  @if($parent!="0")
 		  <li>
-			<a href="{{ url('task') }}" title="Back" data-toggle="tooltip" data-placement="top">
+			<a href="{{ url('task') }}{!! ($data->parent!='0') ? '/'.$data->parent : '' ; !!}" title="Back" data-toggle="tooltip" data-placement="top">
 				<i class="fa fa-arrow-left"></i>
 			</a>
 		  </li>
-		  @endif
 		  <li>
-			<a href="{{ url('task/create') }}{!! ($parent!='0') ? '?t='.$parent->id : '' ; !!}" title="Create" data-toggle="tooltip" data-placement="top">
+			<a href="{{ url('task') }}/{{ $data->id }}/edit" title="Edit" data-toggle="tooltip" data-placement="top">
+				<i class="glyphicon glyphicon-edit"></i>
+			</a>
+		  </li>
+		  <li>
+			<a href="{{ url('task/create') }}?t={{$parent}}" title="Create" data-toggle="tooltip" data-placement="top">
 				<i class="fa fa-plus"></i>
 			</a>
 		  </li>
+		  <li data-toggle="modal" data-target="#description">
+			<a title="Description" data-toggle="tooltip" data-placement="top">
+				<i class="fa fa-info"></i>
+			</a>
+		  </li>
+		  <li>
+			<a title="Delete" data-toggle="tooltip" data-placement="top"
+				onclick="doDelete('{{$data->id}}','{{$data->title}}')">
+				<i class="fa fa-trash"></i>
+			</a>
+		  </li>
+		  @else
+		  <li>
+			<a href="{{ url('task/create') }}" title="Create" data-toggle="tooltip" data-placement="top">
+				<i class="fa fa-plus"></i>
+			</a>
+		  </li>
+		  @endif
 		</ul>
 		<div class="clearfix"></div>
 	  </div>
-	  <div class="x_content">
+	  <div class="x_content" id="x_content">
 		<p class="text-muted font-13 m-b-30">
 		  <!---->
 		</p>
-		@if($parent!="0")
-		<div class="x_panel" style="height: auto;">
-		  <div class="x_title">
-			<h2>
-				Description
-			</h2>
-			<ul class="nav navbar-right panel_toolbox">
-			  <li>
-				<a class="collapse-link" title="Collapse" data-toggle="tooltip" data-placement="top">
-					<i class="fa fa-chevron-up"></i>
-				</a>
-			  </li>
-			</ul>
-			<div class="clearfix"></div>
-		  </div>
-		  <div class="x_content" style="display:none;">
-			<p class="text-muted font-13 m-b-30">
-				{!! $parent->description !!}
-			</p>
-		  </div>
-		</div>		
-		<br/>
-		<br/>
-		@endif
-		<table id="datatable-responsive" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
-			<thead>
-				<tr>
-					<th width="5%">No</th>
-					<th width="30%">Task</th>
-					<th width="65%">Progress</th>
-				</tr>
-			</thead>
-			<tbody>
-			</tbody>
-		</table>
 	  </div>
 	</div>
 </div>
 @endsection
 
 @section('modal')
-<div id="canceled" class="modal fade" role="dialog">
+@if($parent!="0")
+<div id="description" class="modal fade" role="dialog">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-body">
+        <h4 class="modal-title"><strong>{{ $data->title }}</strong> Description</h4>
+      </div>
+      <div class="modal-footer">
+		{!! $data->description !!}
+      </div>
+    </div>
+  </div>
+</div>
+@endif
+<div id="delete" class="modal fade" role="dialog">
   <div class="modal-dialog modal-sm">
     <div class="modal-content">
       <div class="modal-body">
-        <h4 class="modal-title">undo cancel <b></b> ?</h4>
+        <h4 class="modal-title">Delete <strong></strong> ?</h4>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-danger btn-sm">Yes</button>
-        <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Nevermind</button>
+		{!! Form::open([
+			'method' => 'DELETE',
+			'url' => ['/task', 1]
+		]) !!}
+		<button type="submit" class="btn btn-sm btn-success">OK</button>
+		<button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Nevermind</button>
+		{!! Form::close() !!}
+      </div>
+    </div>
+  </div>
+</div>
+<div id="perc" class="modal fade" role="dialog">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+	  <div class="modal-header">
+        <h4 class="modal-title">Progress <strong></strong></h4>
+      </div>
+      <div class="modal-body">
+		<center>
+        <input class="knob knob_progress" data-width="100" data-height="120" data-min="0" data-displayPrevious=true data-fgColor="#26B99A" value="0" />
+		</center>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-info">Detail</button>
+        <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>

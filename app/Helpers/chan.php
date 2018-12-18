@@ -50,7 +50,7 @@ class Chan {
 		return $a;
 	}
 	
-	public static function role(){
+	public static function getMainPage(){
 		$route = "/";
 		if(Auth::user()->role=="be604a60-f05b-11e8-a592-1bcc725ac046"){
 			$route = 'dashboard';
@@ -60,23 +60,11 @@ class Chan {
 		return $route;
 	}
 	
-	public static function progress($value){
-		$result = '';
-		if($value==100){
-			$result = 'success';
-		}else if($value>=75){
-			$result = 'primary';
-		}else if($value>=40){
-			$result = 'warning';
-		}else if($value>=0){
-			$result = 'danger';
-		}
-		return $result;
-	}
-	
-	public static function split($data,$delimiter){
-		$result = explode($delimiter,$data);
-		return $result;
+	public static function countData($table,$primary,$value){
+		$data = DB::table($table)
+			->where($primary,$value)
+			->count();
+		return $data;
 	}
 	
 }

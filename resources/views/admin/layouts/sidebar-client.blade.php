@@ -9,11 +9,7 @@
 		<a><i class="glyphicon glyphicon-tasks"></i> Task <span class="fa fa-chevron-down"></span></a>
 		<ul class="nav child_menu">
 		  <li><a href="{{ url('task/create') }}">Create</a></li>
-		  <li><a href="{{ url('task') }}">All Data</a></li>
-		  <li><a href="{{ route('not_started_yet') }}">Not Started Yet</a></li>
-		  <li><a href="{{ route('on_progress') }}">On Progress</a></li>
-		  <li><a href="{{ route('done') }}">Done</a></li>
-		  <li><a href="{{ route('canceled') }}">Canceled</a></li>
+		  <li><a href="{{ url('task') }}">Index</a></li>
 		  <li><a href="#">Log</a></li>
 		</ul>
 	  </li>

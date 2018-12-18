@@ -5,7 +5,7 @@
 
 @push('scripts')
 	<script src="{{ asset('ckeditor4full/ckeditor.js') }}"></script>
-	<script src="{{ asset('js/admin/task.js') }}"></script>
+	<script src="{{ asset('js/admin/task/form.js') }}"></script>
 @endpush
 
 @section('content')
@@ -15,18 +15,13 @@
 		<h2>
 			Task
 			<small>
-				{!! ($parent!="0") ? $breadcrumb.' sub of <b>'.$parent->title.'</b>' : $breadcrumb ; !!}
+				{!! $breadcrumb !!}
 			</small>
 		</h2>
 		<ul class="nav navbar-right panel_toolbox">
 		  <li>
-			<a href="{{ url('task') }}{!! ($parent!='0') ? '/'.$parent->id : '' ; !!}" title="Back" data-toggle="tooltip" data-placement="top">
+			<a href="{{ url('task') }}{!! ($parent!='0') ? '/'.$parent : '' ; !!}" title="Back" data-toggle="tooltip" data-placement="top">
 				<i class="fa fa-arrow-left"></i>
-			</a>
-		  </li>
-		  <li>
-			<a class="collapse-link" title="Collapse" data-toggle="tooltip" data-placement="top">
-				<i class="fa fa-chevron-up"></i>
 			</a>
 		  </li>
 		</ul>
@@ -37,7 +32,7 @@
 		  <!---->
 		</p>          
         {!! Form::open(['url' => url('task'), 'class' => 'form-horizontal', 'files' => true]) !!}
-			{!! Form::hidden('parent', ($parent!="0")?$parent->id:'0', ['class' => 'form-control']) !!}
+			{!! Form::hidden('parent', ($parent!="0")?$parent:'0', ['class' => 'form-control']) !!}
 			<div class="form-group {{ $errors->has('title') ? 'has-error' : ''}}">
 				{!! Form::label('title', 'Title', ['class' => 'col-md-2 control-label txt-left']) !!}
 				<div class="col-md-10">
