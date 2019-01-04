@@ -16,7 +16,7 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 	
-	protected function _uuid($table,$primary){
+	protected function _uuid($table,$primary){ // get primary key
 		$uuid = Uuid::generate();
 		$query = DB::table($table)->where($primary,$uuid)->count();
 		while($query >= 1) {
@@ -31,7 +31,7 @@ class Controller extends BaseController
 		return $query;
 	}
 	
-	protected function _flashStore($query,$r){
+	protected function _flashStore($query,$r){ // alert store
 		if(!$query){ // if failed
 			$text = "Failed to add $r";
 			$type = 'warning';
@@ -43,7 +43,19 @@ class Controller extends BaseController
 		session()->flash('type', $type);
 	}
 	
-	protected function _flashUpdate($query,$r){
+	protected function _flashDelete($query,$r){ // alert delete
+		if(!$query){ // if failed
+			$text = "Failed to delete $r";
+			$type = 'warning';
+		}else{ // if success
+			$text = "$r has been deleted.";
+			$type = 'success';
+		}
+		session()->flash('text', $text);
+		session()->flash('type', $type);
+	}
+	
+	protected function _flashUpdate($query,$r){ // alert update
 		if(!$query){ // if failed
 			$text = "Failed to update $r";
 			$type = 'warning';
@@ -55,7 +67,7 @@ class Controller extends BaseController
 		session()->flash('type', $type);
 	}
 	
-	protected function _breadcrumb($id){
+	protected function _breadcrumb($id){ // return breadcrumb
 		$i = 0;
 		$limit = 0;
 		$result = "";

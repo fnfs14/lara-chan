@@ -27,7 +27,9 @@ Route::get('/', 'welcome')->name('welcome')->middleware('welcome');
 Route::group(['middleware' => ['client']], function () {
 	Route::get('/home', 'home')->name('home');
 		Route::resource('/task', 'task');
-		Route::get('data/task/{parent}/{offset}', 'task@data')->name('task-data');
+		Route::get('data/task/desc/{id}', 'task@getDesc');
+		Route::get('data/task/{parent}/{offset}', 'task@data');
+		Route::get('update/task/{id}/{perc}', 'task@updatePerc');
 });
 // end of client routes
 
@@ -37,3 +39,7 @@ Route::group(['middleware' => ['admin']], function () {
 	Route::resource('/user', 'admin\user');
 });
 // end of admin routes
+
+// start of testing routes
+	Route::get('test/{id}', 'task@doDestroy');
+// end of testing routes

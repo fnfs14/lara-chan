@@ -29,13 +29,14 @@
     <!-- jQuery Knob -->
     <script src="{{ chan::vendor('jquery-knob/dist/jquery.knob.min.js') }}"></script>
 	<script>
-		var _offset = 0;
-		var _parent = "{{ $parent }}";
-		var _url = "{{ url('task') }}";
-		var _urlData = "{{ url('data/task') }}";
-		var _countAllData = {{ chan::countData('task.task','parent',$parent) }};
+		var _offset = 0; // page of data sql
+		var _parent = "{{ $parent }}"; // parent of loaded task
+		var _url = "{{ url('task') }}"; // main url
+		var _urlData = "{{ url('data/task') }}"; // data url
+		var _urlUpdPerc = "{{ url('update/task') }}"; // update progress url
+		var _countAllData = {{ chan::countData('task.task','parent',$parent) }}; // amount of all data
 		@if(session()->has('text') and session()->has('type'))
-			_pNotify('Task',"{{session('text')}}","{{session('type')}}");
+			_pNotify('Task',"{{session('text')}}","{{session('type')}}"); // load notify
 		@endif
 	</script>
 	<script src="{{ asset('js/admin/task/index.js') }}"></script>
@@ -52,7 +53,7 @@
 			</small>
 		</h2>
 		<ul class="nav navbar-right panel_toolbox">
-		  @if($parent!="0")
+		  @if($parent!="0") <!-- main task -->
 		  <li>
 			<a href="{{ url('task') }}{!! ($data->parent!='0') ? '/'.$data->parent : '' ; !!}" title="Back" data-toggle="tooltip" data-placement="top">
 				<i class="fa fa-arrow-left"></i>
@@ -68,7 +69,7 @@
 				<i class="fa fa-plus"></i>
 			</a>
 		  </li>
-		  <li data-toggle="modal" data-target="#description">
+		  <li onclick="getDesc(this)" primaryKey="{{$data->id}}">
 			<a title="Description" data-toggle="tooltip" data-placement="top">
 				<i class="fa fa-info"></i>
 			</a>
@@ -79,7 +80,7 @@
 				<i class="fa fa-trash"></i>
 			</a>
 		  </li>
-		  @else
+		  @else <!-- sub task -->
 		  <li>
 			<a href="{{ url('task/create') }}" title="Create" data-toggle="tooltip" data-placement="top">
 				<i class="fa fa-plus"></i>
@@ -99,20 +100,19 @@
 @endsection
 
 @section('modal')
-@if($parent!="0")
+<!-- description -->
 <div id="description" class="modal fade" role="dialog">
   <div class="modal-dialog modal-md">
     <div class="modal-content">
       <div class="modal-body">
-        <h4 class="modal-title"><strong>{{ $data->title }}</strong> Description</h4>
+        <h4 class="modal-title"><strong></strong> Description</h4>
       </div>
       <div class="modal-footer">
-		{!! $data->description !!}
       </div>
     </div>
   </div>
 </div>
-@endif
+<!-- delete -->
 <div id="delete" class="modal fade" role="dialog">
   <div class="modal-dialog modal-sm">
     <div class="modal-content">
@@ -131,10 +131,14 @@
     </div>
   </div>
 </div>
+<!-- progress -->
 <div id="perc" class="modal fade" role="dialog">
   <div class="modal-dialog modal-sm">
     <div class="modal-content">
 	  <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+			<span class="fa fa-md fa-times"></span>
+		</button>
         <h4 class="modal-title">Progress <strong></strong></h4>
       </div>
       <div class="modal-body">
@@ -143,8 +147,14 @@
 		</center>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-sm btn-info">Detail</button>
-        <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
+        <a class="btn btn-sm btn-primary">Add Sub</a>
+		<div class="btn-group">
+        <button type="button" class="btn btn-sm btn-info" id="perc-detail">Go To Detail</button>
+        <button type="button" class="btn btn-sm btn-info" id="perc-desc" onclick="getDesc(this)">
+			<span class="fa fa-info"></span>
+		</button>
+		</div>
+        <button type="button" class="btn btn-sm btn-danger">Delete</button>
       </div>
     </div>
   </div>
